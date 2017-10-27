@@ -1,5 +1,12 @@
 # Changes
 
+## Version 0.15 (2017-10-19)
+- Changed glium dependency to version `0.18`
+
+## Version 0.14 (2017-10-19)
+- Changed glium dependency to version `0.17`
+- Changed SDL2 dependency to version `0.30`
+
 ## Version 0.13 (2017-01-05)
 - Changed glium dependency to version `0.15`
 - Changed SDL2 dependency to version `0.27`

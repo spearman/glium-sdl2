@@ -1,7 +1,7 @@
 [package]
 name = "glium_sdl2"
-version = "0.13.1"
-authors = ["Dan Spencer <dan@atomicpotato.net>"]
+version = "0.15.0"
+authors = ["Danny Spencer <dan@atomicpotato.net>"]
 license = "MIT/Apache-2.0"
 keywords = ["graphics", "gamedev", "glium", "sdl", "opengl"]
 documentation = "http://nukep.github.io/glium-sdl2/"
@@ -9,11 +9,10 @@ repository = "https://github.com/nukep/glium-sdl2/"
 description = "An SDL2 backend for Glium - a high-level OpenGL wrapper for the Rust language."
 
 [dependencies]
-sdl2 = { path = "../rust-sdl2", version = "0.30.0" }
+sdl2 = { git = "git://github.com/spearman/rust-sdl2.git", version = "0.30", branch = "context-hack" }
 
 [dependencies.glium]
-path = "../glium"
-version = "0.17.*"
+version = "0.18"
 # Do not enable any features by default, as to not bring in unwanted dependencies
 # (Cargo seems to apply a "union" of requested features across projects for any given dependency).
 # Instead, Let the library user define which features they want.

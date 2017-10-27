@@ -62,6 +62,7 @@ use std::os::raw::c_void;
 use glium::SwapBuffersError;
 use glium::debug;
 use glium::backend::{Backend, Context, Facade};
+use glium::IncompatibleOpenGl;
 use sdl2::VideoSubsystem;
 use sdl2::video::{Window, WindowBuildError};
 
@@ -71,8 +72,7 @@ pub type Display = SDL2Facade;
 #[derive(Debug)]
 pub enum GliumSdl2Error {
     WindowBuildError(WindowBuildError),
-    ContextCreationError(String),
-    IncompatibleOpenGl(glium::IncompatibleOpenGl)
+    ContextCreationError(String)
 }
 
 impl From<String> for GliumSdl2Error {
@@ -87,9 +87,9 @@ impl From<WindowBuildError> for GliumSdl2Error {
     }
 }
 
-impl From<glium::IncompatibleOpenGl> for GliumSdl2Error {
-    fn from(err : glium::IncompatibleOpenGl) -> GliumSdl2Error {
-        return GliumSdl2Error::IncompatibleOpenGl(err);
+impl From<IncompatibleOpenGl> for GliumSdl2Error {
+    fn from(err : IncompatibleOpenGl) -> GliumSdl2Error {
+        GliumSdl2Error::ContextCreationError(err.to_string())
     }
 }
 
@@ -97,23 +97,24 @@ impl std::error::Error for GliumSdl2Error {
     fn description(&self) -> &str {
         return match *self {
             GliumSdl2Error::WindowBuildError(ref err) => err.description(),
-            GliumSdl2Error::ContextCreationError(ref s) => s,
-            GliumSdl2Error::IncompatibleOpenGl(ref err) => err.description()
+            GliumSdl2Error::ContextCreationError(ref s) => s
         }
     }
 
     fn cause(&self) -> Option<&std::error::Error> {
         match *self {
             GliumSdl2Error::WindowBuildError(ref err) => err.cause(),
-            GliumSdl2Error::ContextCreationError(_) => None,
-            GliumSdl2Error::IncompatibleOpenGl(ref err) => err.cause()
+            GliumSdl2Error::ContextCreationError(_) => None
         }
     }
 }
 
 impl std::fmt::Display for GliumSdl2Error {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
-        formatter.write_str(self.to_string().as_str())
+        match *self {
+            GliumSdl2Error::WindowBuildError(ref err) => err.fmt(formatter),
+            GliumSdl2Error::ContextCreationError(ref err) => err.fmt(formatter),
+        }
     }
 }
 
@@ -197,7 +198,7 @@ pub trait DisplayBuild {
     /// This function does the same as `build_glium`, except that the resulting context
     /// will assume that the current OpenGL context will never change.
     unsafe fn build_glium_unchecked_debug(self, debug::DebugCallbackBehavior)
-                                          -> Result<Self::Facade, Self::Err>;
+        -> Result<Self::Facade, Self::Err>;
 
     // TODO
     // Changes the settings of an existing facade.
